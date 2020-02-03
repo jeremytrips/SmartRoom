@@ -36,9 +36,10 @@ class SerialCommunication():
             data = input('> ')
             if data == "1":
                 self.port = -1
-            if not self.port_com.is_open:
+            elif not self.port_com.is_open:
                 pass
-            self.port_com.write(data.encode())
+            else:
+                self.port_com.write(data.encode())
             time.sleep(0.01)
 
     def receive(self):
