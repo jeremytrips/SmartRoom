@@ -3,7 +3,7 @@ import serial.tools.list_ports as ls_port
 import threading
 
 
-class SerialCommunication():
+class SerialCommunication:
 
     def __init__(self):
         self.port_com = serial.Serial(baudrate=115200, timeout=0.1, write_timeout=0.1)
@@ -26,21 +26,12 @@ class SerialCommunication():
         self.port_com.port = port
         self.port_com.open()
         self.port_running = True
-        self.listen_thread.run()
+        #  self.listen_thread.run()
         self.write_thread.run()
     port = property(None, port)
 
     def send(self, data=None):
-        while self.port_running:
-            print("in")
-            data = input('> ')
-            if data == "1":
-                self.port = -1
-            elif not self.port_com.is_open:
-                pass
-            else:
-                self.port_com.write(data.encode())
-            time.sleep(0.01)
+        self.port_com.write(data)
 
     def receive(self):
         while self.port_running:
@@ -50,11 +41,10 @@ class SerialCommunication():
                 pass
             else:
                 print(self.port_com.read(self.port_com.in_waiting).decode())
-            time.sleep(0.01)
+            time.sleep(0.1)
 
 
 if __name__ == "__main__":
     import time
     s = SerialCommunication()
     s.port = "COM3"
-
