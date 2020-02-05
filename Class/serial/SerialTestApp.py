@@ -5,7 +5,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner
 
-from .serialcommunication import SerialCommunication
+from serialcom import SerialCom
 
 
 class MainLayout(FloatLayout):
@@ -17,11 +17,17 @@ class MainLayout(FloatLayout):
         self.send_text_input = TextInput(size_hint=(0.5, 0.05), pos_hint={'x': 0.1, 'y': 0.025}, multiline=False,
                                          on_text_validate=self.send_data)
 
-        self.port_spinner = Spinner(size_hint=(0.15, 0.1), pos_hint={'x': 0.825, 'y': 0.7})
-
+        self.port_spinner = Spinner(size_hint=(0.15, 0.1), pos_hint={'x': 0.825, 'y': 0.7}, text="Port",
+                                    values=SerialCom.list_port())
+        self.port_spinner.bind(on_text=self.connect)
         self.add_widget(self.send_text_input)
         self.add_widget(self.label)
         self.add_widget(self.port_spinner)
+
+        self.com = SerialCom()
+
+    def connect(self, text):
+        pass
 
     def send_data(self, obj):
         print(obj.text)
@@ -36,5 +42,5 @@ class SerialTest(App):
         return MainLayout()
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     SerialTest().run()

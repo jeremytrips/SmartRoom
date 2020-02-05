@@ -1,9 +1,9 @@
 import serial
 import serial.tools.list_ports as ls_port
 import threading
+import time
 
-
-class SerialCommunication:
+class SerialCom:
 
     def __init__(self):
         self.port_com = serial.Serial(baudrate=115200, timeout=0.1, write_timeout=0.1)
@@ -14,7 +14,12 @@ class SerialCommunication:
 
     @staticmethod
     def list_port():
-        return ls_port.comports()
+        com = ls_port.comports()
+        rt_list = []
+        for port in com:
+            tmp = port.description.index("COM")
+            rt_list.append(str(port.description)[tmp:-1])
+        return rt_list
 
     def port(self, port):
         if port == -1:
@@ -46,5 +51,4 @@ class SerialCommunication:
 
 if __name__ == "__main__":
     import time
-    s = SerialCommunication()
-    s.port = "COM3"
+
