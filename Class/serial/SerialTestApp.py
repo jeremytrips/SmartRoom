@@ -7,6 +7,7 @@ from kivy.uix.spinner import Spinner
 
 from .serialcommunication import SerialCommunication
 
+
 class MainLayout(FloatLayout):
 
     def __init__(self):
