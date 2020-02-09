@@ -3,6 +3,7 @@ import serial.tools.list_ports as ls_port
 import threading
 import time
 
+
 class SerialCom:
 
     def __init__(self):
@@ -31,12 +32,15 @@ class SerialCom:
         self.port_com.port = port
         self.port_com.open()
         self.port_running = True
-        #  self.listen_thread.run()
+        self.listen_thread.run()
         self.write_thread.run()
     port = property(None, port)
 
-    def send(self, data=None):
-        self.port_com.write(data)
+    def send(self, data=None, action=None):
+        to_send = data + " " * (48 - len(data))
+        to_send += action
+        to_send += "%"
+        self.port_com.write(to_send)
 
     def receive(self):
         while self.port_running:
@@ -50,5 +54,15 @@ class SerialCom:
 
 
 if __name__ == "__main__":
-    import time
+    def format_string(data, action):
+        to_send = data + " " * (48 - len(data))
+        to_send += action
+        to_send += "%"
+        print(to_send)
+
+    format_string("netis_C30DB3", 's')
+    format_string("password", 'p')
+
+# netis_C30DB3                                    s%
+# password                                        p%
 
