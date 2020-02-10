@@ -9,12 +9,20 @@
 // Variable declaration.
 char ssid[50];
 char password[50];
+char host[50];
+int port = -1;
+char incommingFrame[27] = 0;
+
+// Used to retrieve data from the EEPROM.
+char temp[10];
 
 // Function prototype.
 void EEPROM_write(char arrayToWrite[], int firstIndex);
 void EEPROM_read(char* arrayToRead, int firstIndex);
 void resetArray(char* arrayToReset[]);
 void setupWifiData();
+int arrayToInt(char array[]);
+void setDigitalValue(int pin, int value);
 
 void setup() {
   // put your setup code here, to run once:
@@ -59,15 +67,55 @@ void setup() {
 
   EEPROM.end();
 
+  // Read server data in EEPROM.
+  EEPROM_read(host, 301);
+  EEPROM_read(temp, 351);
+  port = arrayToInt(temp) ;
+
+  // Connection to the server.
+  WiFiClient client;
+  if (!client.connect(host, port)) {
+    // if the user can't connect to the server provided data may be wrong and so red led is turned on.
+    digitalWrite(infoPinR, LOW);
+    while(true);
+  }
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  /* 
+   * 
+   */
+
+  if(client.available()){
+    // Data has been sended by the server. The data frame is described in the doc.
+    incommingFrame = client.readStringUntil('\r');
+  }
+                  
 }
 
-void setupWifiData(){
+
+int arrayToInt(char array[]){
   /*
-   * Normaly the first boot of the esp32. This loop is used to save data in the esp32 EEPROM.
+   * Take an array of char as parameter that has been readed in the EEPROM.
+   * The array contains only different int. 
+   * The function loop through the array and multiply the int by the corresponding factor.
+   * The port number is an unsigned 16-bit integer, so maximum 65535. the max factor is then 10000
+   */
+    double toReturn = 0;
+    for(int i = 0; i < 5 ; i++){
+        int tmp = array[i] - '0';
+        double factor = pow(10, (4-i));
+
+        printf("value: %d, factor: %f\n", tmp, factor);
+        toReturn += tmp*factor;
+    }
+    return toReturn;
+}
+
+ void setupWifiData(){
+  /*
+   * Usualy the first boot of the esp32. This loop is used to save data in the esp32 EEPROM.
    * The esp32 memory map is in the data. 
    * The App software is need to check the length of the sended data. It must be lower than 50 chars.
    * In that configuration the info led will blink in green every second. 
@@ -84,7 +132,8 @@ void setupWifiData(){
   const int delay = 1000;
 
   while(run){
-    /* µc will receive data from the app through UART. 
+    /* 
+     * µc will receive data from the app through UART. 
      * Those will be stored in the EEPROM folowing the memory table that has been draw.
      * The 48 char represent the action to do.
      */
@@ -92,7 +141,6 @@ void setupWifiData(){
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= delay) {
-      // save the last time you blinked the LED
       previousMillis = currentMillis;
       digitalWrite(infoPinG, !digitalRead(infoPinG));
     }
@@ -105,7 +153,7 @@ void setupWifiData(){
     }
     switch (action){
       case 's': 
-        // Writing the SSID
+        // Writing the Ssid
         EEPROM_write(tmp, 401);
         writen++;
         break;
