@@ -1,6 +1,9 @@
 #include <EEPROM.h>
 #include "WiFi.h"
 
+//send
+// atoi atoint()
+
 // Pinout declaration for the info RGB pin. Color will be described in the table doc.
 #define infoPinR 19
 #define infoPinG 18
@@ -91,7 +94,7 @@ void setup() {
 
 void loop() {
   /* 
-   * 
+   * TODO
    */
   // Connection to the server.
 
@@ -101,7 +104,7 @@ void loop() {
     String tmp = client.readStringUntil('%');
     
   }
-                  
+
 }
 
 
