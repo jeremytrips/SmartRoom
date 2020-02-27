@@ -2,19 +2,20 @@
 #include "WiFi.h"
 
 // Pinout declaration for the info RGB pin. Color will be described in the table doc.
-#define infoPinR 13  
-#define infoPinG 14
-#define infoPinB 15
+#define infoPinR 19
+#define infoPinG 18
+#define infoPinB 5
 
 // Variable declaration.
 char ssid[50];
 char password[50];
 char host[50];
 int port = -1;
-char incommingFrame[27] = 0;
+char incommingFrame[27] = {0};
 
 // Used to retrieve data from the EEPROM.
 char temp[10];
+WiFiClient client;
 
 // Function prototype.
 void EEPROM_write(char arrayToWrite[], int firstIndex);
@@ -25,7 +26,8 @@ int arrayToInt(char array[]);
 void setDigitalValue(int pin, int value);
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  
   pinMode(2, OUTPUT);
 
   pinMode(infoPinR, OUTPUT);
@@ -40,15 +42,20 @@ void setup() {
   EEPROM.begin(512);
   if(EEPROM.read(511) != 0x55){
     // Start Serial comunication for setup.
+    Serial.println("serial");
     setupWifiData();
   } else {
     /* Start the wifi protocol comunication.
      * The blue led will blink until the connection occurs. 
      * After 10 try, the esp switch on a red led to warn the user. 
      */
+     Serial.println("Wifi");
     int connection_try = 0;
     EEPROM_read(ssid, 401);
     EEPROM_read(password, 451);
+
+    Serial.println(ssid);
+    Serial.println(password);
     
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -70,26 +77,29 @@ void setup() {
   // Read server data in EEPROM.
   EEPROM_read(host, 301);
   EEPROM_read(temp, 351);
+  Serial.println(host);
+  Serial.println(temp);
   port = arrayToInt(temp) ;
 
-  // Connection to the server.
-  WiFiClient client;
+  
   if (!client.connect(host, port)) {
     // if the user can't connect to the server provided data may be wrong and so red led is turned on.
     digitalWrite(infoPinR, LOW);
     while(true);
   }
-
 }
 
 void loop() {
   /* 
    * 
    */
+  // Connection to the server.
+
 
   if(client.available()){
     // Data has been sended by the server. The data frame is described in the doc.
-    incommingFrame = client.readStringUntil('\r');
+    String tmp = client.readStringUntil('%');
+    
   }
                   
 }
@@ -107,7 +117,7 @@ int arrayToInt(char array[]){
         int tmp = array[i] - '0';
         double factor = pow(10, (4-i));
 
-        printf("value: %d, factor: %f\n", tmp, factor);
+        //printf("value: %d, factor: %f\n", tmp, factor);
         toReturn += tmp*factor;
     }
     return toReturn;
@@ -130,7 +140,7 @@ int arrayToInt(char array[]){
   bool run = true;
   unsigned long previousMillis = 0;
   const int delay = 1000;
-
+  Serial.println("in");
   while(run){
     /* 
      * µc will receive data from the app through UART. 

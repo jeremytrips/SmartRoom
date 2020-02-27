@@ -23,8 +23,8 @@ class SerialCom:
         return rt_list
 
     def port(self, port):
+        print('in')
         if port == -1:
-            print("closing")
             self.port_running = False
             time.sleep(0.1)
             self.port_com.close()
@@ -32,15 +32,15 @@ class SerialCom:
         self.port_com.port = port
         self.port_com.open()
         self.port_running = True
-        self.listen_thread.run()
-        self.write_thread.run()
+        # self.listen_thread.run()
     port = property(None, port)
 
     def send(self, data=None, action=None):
         to_send = data + " " * (48 - len(data))
         to_send += action
         to_send += "%"
-        self.port_com.write(to_send)
+        self.port_com.write(to_send.encode())
+        return to_send
 
     def receive(self):
         while self.port_running:
@@ -49,7 +49,7 @@ class SerialCom:
             elif not self.port_com.in_waiting:
                 pass
             else:
-                print(self.port_com.read(self.port_com.in_waiting).decode())
+                print(self.port_com.read(self.port_com.in_waiting))
             time.sleep(0.1)
 
 
@@ -65,4 +65,6 @@ if __name__ == "__main__":
 
 # netis_C30DB3                                    s%
 # password                                        p%
+# 192.168.1.1                                     i%
+# 0800                                            i%
 
