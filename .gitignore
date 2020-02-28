@@ -1,4 +1,4 @@
-python/venv
+venv
 .idea
 .vscode
 python/server/Class/serial/__pycache__/

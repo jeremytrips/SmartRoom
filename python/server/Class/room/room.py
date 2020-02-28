@@ -9,3 +9,6 @@ class Room():
 
     def append_module(self, module):
         self.__module.append(module)
+
+if __name__=="__main__":
+    a = Room
