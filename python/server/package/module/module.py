@@ -4,9 +4,12 @@ class Module:
     identifier = 0
 
     def __init__(self, name, start_index, end_index):
-        self.allocator = PinAllocator(start_index, end_index)
+        self.__allocator = PinAllocator(start_index, end_index)
         self.__name = name
         self.__identifier = 0
+
+    def allocate(self):
+        return self.__allocator.allocate()
 
     def get_identifier(self):
         return self.__identifier
