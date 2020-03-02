@@ -1,4 +1,4 @@
-from Class.allocator.idallocator import IdAllocator
+from package.allocator.idallocator import IdAllocator
 
 
 class Room():
