@@ -6,10 +6,7 @@ class Module:
         self.__allocator = PinAllocator(start_index, end_index)
         self.name = name
         self.identifier = identitfier
-        client = 
 
-    def send(self, data):
-        self.
 
     def allocate(self):
         return self.__allocator.allocate()

@@ -11,8 +11,9 @@ LISTEN_PORT = 8091
 
 class Server():
 
-    def __init__(self):
+    def __init__(self, room):
         # super().__init__()
+        handler = ListenServer
         self.net = HTTPServer((LOCALHOST, LISTEN_PORT), ListenServer)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -20,6 +21,7 @@ class Server():
         self.host = LOCALHOST
         self.client = list()
         self.server_thread = threading.Thread(target=self.run_server)
+        self.room = room
     
     def run(self):
 

@@ -1,11 +1,12 @@
 from http.server import BaseHTTPRequestHandler,HTTPServer
 import json
-
-PORT_NUMBER = 1515
-
+"""
+TODO : -implement a way to use Room inside the handler.
+"""
 class ListenServer(BaseHTTPRequestHandler):
 
 	def do_GET(self):
+		# print(self.room)
 		url = self.path.split('/')
 		url.pop(0)
 		self.handle_data(url)

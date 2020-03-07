@@ -30,10 +30,8 @@ def http_server():
 #         module
 #         newthread.start()
 
-def server():
-    Server().run()
 
 if __name__ == "__main__":
     room = Room()
-    server()
+    Server(room).run()
     
