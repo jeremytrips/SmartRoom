@@ -1,6 +1,5 @@
-
-
-class PinAllocator():
+import pickle
+class PinAllocator:
 
     def __init__(self, start_index, end_index):
         self.available_pin_list = [i for i in range(start_index, end_index)]
@@ -14,9 +13,18 @@ class PinAllocator():
         except IndexError:
             return -1
 
-    def unallocate(self, pin_to_unallocate):
+    def deallocate(self, pin_to_deallocate):
         try:
-            self.used_pin_list.remove(pin_to_unallocate)
-            self.available_pin_list.append(pin_to_unallocate)
+            self.used_pin_list.remove(pin_to_deallocate)
+            self.available_pin_list.append(pin_to_deallocate)
         except ValueError:
             pass
+
+
+if __name__ == "__main__":
+
+    fdp = PinAllocator(0, 25)
+    print(fdp)
+    filefdp = open('save.json', 'wb')
+    pickle.dump(fdp, filefdp)
+    filefdp.close()

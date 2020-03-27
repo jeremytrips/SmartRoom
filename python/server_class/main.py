@@ -6,11 +6,6 @@ import threading
 import json
 from package.server.server import Server
 
-
-
-
-
-
 def http_server():
         server = HTTPServer(('', LISTEN_PORT), ListenServer)
         print('Started httpserver on port ' , LISTEN_PORT)

@@ -3,6 +3,8 @@ import json
 """
 TODO : -implement a way to use Room inside the handler.
 """
+
+
 class ListenServer(BaseHTTPRequestHandler):
 
 	def do_GET(self):
@@ -23,6 +25,7 @@ class ListenServer(BaseHTTPRequestHandler):
 			error = {"error": f"Error action invalid '{data[0]}'"}
 			self.write(error)
 
+
 if __name__ == "__main__":
 	try:
 
@@ -33,4 +36,3 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		print('^C received, shutting down the web server')
 		server.socket.close()
-		

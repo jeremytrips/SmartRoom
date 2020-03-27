@@ -1,6 +1,10 @@
+"""
+    TODO: eventually a parent class Allocator
+
+"""
 
 
-class IdAllocator():
+class IdAllocator:
 
     def __init__(self):
         self.available_id_list = [i for i in range(10)]
@@ -14,9 +18,9 @@ class IdAllocator():
         except IndexError:
             return -1
 
-    def unallocate(self, id_to_unallocate):
+    def deallocate(self, id_to_deallocate):
         try:
-            self.used_id_list.remove(id_to_unallocate)
-            self.available_id_list.append(id_to_unallocate)
+            self.used_id_list.remove(id_to_deallocate)
+            self.available_id_list.append(id_to_deallocate)
         except ValueError:
             pass

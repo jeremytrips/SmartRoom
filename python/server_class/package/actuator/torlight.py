@@ -1,14 +1,20 @@
-from light import Light
+from package.actuator.light import Light
+
 
 class TorLight(Light):
+    numberOfLight = 0
 
-    def __init__(self, pin, name, value=0):
+    def __init__(self, name=None, value=0):
+        if name is None:
+            TorLight.numberOfLight += 1
+            name = f"Tor light {TorLight.numberOfLight}"
         self.__value = value
         self.__old_value = self.__value
-        super().__init__(pin, name)
-        
+        super().__init__(name)
 
     def set_value(self, value):
+        if not isinstance(value, bool):
+            raise AttributeError("TorLight value attribute must be a bool.")
         self.__old_value = self.__value
         self.__value = value
 
@@ -18,12 +24,10 @@ class TorLight(Light):
     Value = property(get_value, set_value)
 
     def __dict__(self):
-        return {
-            "pin": self.pin,
-            "name": self.name, 
-            "value": self.__value
-        }
+        temp = super().__dict__()
+        temp["value"] = self.__value
+        return temp
+
 
 if __name__ == "__main__":
-    a = TorLight(1, "coucou")
-    print(a.__dict__())
+    pass
