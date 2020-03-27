@@ -9,13 +9,15 @@ class MoodLight(Light):
             MoodLight.numberOfLight += 1
             name = f"Mood light {MoodLight.numberOfLight}"
         self.__value = value
-        self.__old_value = self.__value
         super().__init__(name)
+
+    def toggle(self, data):
+        self.__value = data[self.get_name()]
 
     def set_value(self, value):
         if not isinstance(value, int):
             raise AttributeError("MoodLight value attribute must be an int.")
-        self.__old_value = self.__value
+        self.save_data(self.__value)
         if value < 0:
             self.__value = 0
         elif value > 255:

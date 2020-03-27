@@ -1,4 +1,5 @@
 from package.actuator.light import Light
+import warnings
 
 
 class RgbLight(Light):
@@ -11,13 +12,18 @@ class RgbLight(Light):
             RgbLight.numberOfLight += 1
             name = f"RGB light {RgbLight.numberOfLight}"
         self.__value = value
-        self.__old_value = self.__value
         super().__init__(name)
 
+    def toggle(self, data):
+        self.__value = data[self.get_name()]
+
     def set_value(self, value):
+        if isinstance(value, int):
+            value = [value, value, value]
+            # warnings.warn("set_value should have a list attribute not an int", Warning)
         if not isinstance(value, list):
             raise AttributeError("RgbLight value attribute must be a list of int.")
-        self.__old_value = self.__value
+        self.save_data(self.__value)
         for i in range(len(value)):
             if value[i] < 0:
                 self.__value[i] = 0

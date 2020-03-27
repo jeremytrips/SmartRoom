@@ -6,7 +6,6 @@ class Esp32(Module):
 
     def __init__(self, name):
         super().__init__(16, 33, name)
-        self.lights = []
 
     def append_light(self, light_to_add):
         """
@@ -25,9 +24,9 @@ class Esp32(Module):
         :param light_name:
         :return:
         """
-        print("---")
-        print(self.lights[self.lights.index(light_name)])
-        return self.lights[self.lights.index(light_name)]
+        light = self.lights[self.lights.index(light_name)]
+        print(light.__dict__())
+        return light
 
     def remove_light(self, light_to_remove):
         """
@@ -50,8 +49,8 @@ class Esp32(Module):
         :param value:
         :return:
         """
-        if not isinstance(light_to_set, Light):
-            raise Exception(f"You can't set the value of {light_to_set}. It is not an instance of light.")
+        if light_to_set not in self.lights:
+            raise Exception(f"You can't set the value of {light_to_set}. It is not a member of {self.Name}.")
 
         for light in self.lights:
             if light == light_to_set:
@@ -59,15 +58,4 @@ class Esp32(Module):
 
 
 if __name__ == "__main__":
-    from package.actuator.torlight import TorLight
-    import pickle
-    esp = Esp32("Desktop")
-    esp.append_light(TorLight())
-    with open("save.json", 'wb') as file:
-        pickle.dump(esp, file)
-
-    file = open("save.json", 'rb')
-    test = pickle.load(file)
-    file.close()
-    test.retrieve_light()
-
+    pass

@@ -9,14 +9,21 @@ class TorLight(Light):
             TorLight.numberOfLight += 1
             name = f"Tor light {TorLight.numberOfLight}"
         self.__value = value
-        self.__old_value = self.__value
         super().__init__(name)
 
+    def toggle(self, data):
+        self.__value = data[self.get_name()]
+
     def set_value(self, value):
-        if not isinstance(value, bool):
+        if not isinstance(value, int):
             raise AttributeError("TorLight value attribute must be a bool.")
-        self.__old_value = self.__value
-        self.__value = value
+        self.save_data(self.__value)
+        if value < 0:
+            self.__value = 0
+        elif value > 1:
+            self.__value = 1
+        else:
+            self.__value = value
 
     def get_value(self):
         return self.__value

@@ -1,4 +1,5 @@
 from package.allocator.pinallocator import PinAllocator
+from utils import Utils
 
 
 class Module:
@@ -11,6 +12,16 @@ class Module:
         self.__allocator = PinAllocator(start_index, end_index)
         self.__name = name
         self.__identifier = -1
+        self.lights = []
+
+    def switch_on(self):
+        data = Utils.get_data()
+        for light in self.lights:
+            light.toggle(data)
+
+    def switch_off(self):
+        for light in self.lights:
+            light.Value = 0
 
     def __eq__(self, other):
         return self.__name == other
@@ -35,7 +46,7 @@ class Module:
     Name = property(get_name, set_name)
 
     def __str__(self):
-        return self.__name
+        return f"{self.__name} at {id(self)}"
 
 
 if __name__ == "__main__":

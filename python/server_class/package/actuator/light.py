@@ -1,9 +1,14 @@
+from utils import Utils
+
 
 class Light:
 
     def __init__(self, name):
         self.__pin = -1
         self.__name = name
+
+    def save_data(self, value):
+        Utils.save_data({self.__name: value})
 
     def __eq__(self, other):
         return self.__name == other
@@ -20,8 +25,8 @@ class Light:
     Pin = property(get_pin, set_pin)
 
     def get_name(self):
-        return self.name
+        return self.__name
     Name = property(get_name)
 
     def __dict__(self):
-        return {"pin": self.pin, "name": self.name}
+        return {"pin": self.__pin, "name": self.__name}
