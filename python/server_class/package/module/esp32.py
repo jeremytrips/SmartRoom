@@ -1,5 +1,6 @@
 from package.module.module import Module
 from package.actuator.light import Light
+from package.jsonifier.jsonifier import Jsonifier
 
 
 class Esp32(Module):
@@ -13,10 +14,12 @@ class Esp32(Module):
         :param light_to_add:
         :return:
         """
-        if not isinstance(light_to_add, Light):
-            raise Exception("Module light accept only Light base element")
-        light_to_add.Pin = self.allocate()
-        self.lights.append(light_to_add)
+        if light_to_add in self._lights:
+            self._jsonifier.error("LIGHT_ALREADY_EXIST")
+            return
+        light_to_add.pin = self._allocator.allocate()
+        self._lights.append(light_to_add)
+        return
     
     def retrieve_light(self, light_name):
         """
@@ -24,9 +27,11 @@ class Esp32(Module):
         :param light_name:
         :return:
         """
-        light = self.lights[self.lights.index(light_name)]
-        print(light.__dict__())
-        return light
+        if light_name not in self._lights:
+            self._jsonifier.error({"error": ["LIGHT_DONT_EXIST", light_name]})
+            return
+        light = self._lights[self._lights.index(light_name)]
+        return light.jsonify()
 
     def remove_light(self, light_to_remove):
         """
@@ -36,11 +41,11 @@ class Esp32(Module):
         """
         if not isinstance(light_to_remove, Light):
             raise Exception("Module light accept only Light base element")
-        if light_to_remove not in self.lights:
-            raise Exception(f"You try to remove a {self.light_name} that is not in {self.name} lights.")
-        index = self.lights.index(light_to_remove)
-        self.__allocator.deallocate(index)
-        self.lights.remove(light_to_remove)
+        if light_to_remove not in self._lights:
+            raise Exception(f"You tried to remove a {light_to_remove} that is not in {self._name} lights.")
+        index = self._lights.index(light_to_remove)
+        self._allocator.deallocate(index)
+        self._lights.remove(light_to_remove)
 
     def set_light(self, light_to_set, value):
         """
@@ -49,12 +54,13 @@ class Esp32(Module):
         :param value:
         :return:
         """
-        if light_to_set not in self.lights:
-            raise Exception(f"You can't set the value of {light_to_set}. It is not a member of {self.Name}.")
-
-        for light in self.lights:
+        if light_to_set not in self._lights:
+            self._jsonifier.error({"LIGHT_DONT_EXIST_ERROR"})
+            return
+        for light in self._lights:
             if light == light_to_set:
                 light.Value = value
+                return light.jsonify()
 
 
 if __name__ == "__main__":

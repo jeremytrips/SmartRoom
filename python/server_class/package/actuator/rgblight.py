@@ -11,11 +11,11 @@ class RgbLight(Light):
         if name is None:
             RgbLight.numberOfLight += 1
             name = f"RGB light {RgbLight.numberOfLight}"
-        self.__value = value
+        self._value = value
         super().__init__(name)
 
     def toggle(self, data):
-        self.__value = data[self.get_name()]
+        self._value = data[self.get_name()]
 
     def set_value(self, value):
         if isinstance(value, int):
@@ -23,24 +23,22 @@ class RgbLight(Light):
             # warnings.warn("set_value should have a list attribute not an int", Warning)
         if not isinstance(value, list):
             raise AttributeError("RgbLight value attribute must be a list of int.")
-        self.save_data(self.__value)
+        self.save_data(self._value)
         for i in range(len(value)):
             if value[i] < 0:
-                self.__value[i] = 0
+                self._value[i] = 0
             elif value[i] > 255:
-                self.__value[i] = 255
+                self._value[i] = 255
             else:
-                self.__value[i] = value[i]
+                self._value[i] = value[i]
 
     def get_value(self):
-        return self.__value
+        return self._value
 
     Value = property(get_value, set_value)
 
-    def __dict__(self):
-        temp = super().__dict__()
-        temp["value"] = self.__value
-        return temp
+    def jsonify(self):
+        return self._jsonifier.get()
 
 
 if __name__ == "__main__":

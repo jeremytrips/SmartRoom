@@ -1,3 +1,4 @@
+from package.jsonifier.jsonifier import Jsonifier
 from utils import Utils
 
 
@@ -6,6 +7,8 @@ class Light:
     def __init__(self, name):
         self.__pin = -1
         self.__name = name
+        self._jsonifier = Jsonifier()
+        self._value = None
 
     def save_data(self, value):
         Utils.save_data({self.__name: value})
@@ -22,11 +25,12 @@ class Light:
     def get_pin(self):
         return self.__pin
 
-    Pin = property(get_pin, set_pin)
+    pin = property(get_pin, set_pin)
 
     def get_name(self):
         return self.__name
-    Name = property(get_name)
+    name = property(get_name)
 
-    def __dict__(self):
-        return {"pin": self.__pin, "name": self.__name}
+    def jsonify(self):
+        self._jsonifier.data({"name": self.__name, "value": self._value})
+        self._jsonifier.get()
