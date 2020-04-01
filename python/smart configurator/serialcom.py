@@ -1,0 +1,76 @@
+import serial
+import serial.tools.list_ports as ls_port
+import threading
+import time
+
+
+class SerialCom:
+
+    def __init__(self):
+        self.port_com = serial.Serial(baudrate=115200, timeout=0.5, write_timeout=0.1)
+        self.port = -1
+        self.port_running = False
+        self.listen_thread = threading.Thread(target=self.receive)
+        self.received = None
+
+    def set_port(self, port):
+        if port == -1:
+            self.port_running = False
+            time.sleep(0.1)
+            self.port_com.close()
+            return
+        self.port_com.port = port
+        self.port_com.open()
+        self.port_running = True
+        self.listen_thread.start()
+    port = property(None, set_port)
+
+    def send(self, data=None, action=None):
+        if not (isinstance(data, bytes) or isinstance(data, str)):
+            raise TypeError("Data must be bytes")
+        if action is None:
+            self.port_com.write(data)
+            return
+        to_send = data + " " * (48 - len(data))
+        to_send += action
+        to_send += "%"
+        self.port_com.write(to_send.encode())
+
+    def receive(self):
+        print(self.listen_thread)
+        while self.port_running:
+            if not self.port_com.is_open:
+                raise Exception(f"Port {self.port_com} not open")
+            if self.port_com.inWaiting():
+                self.received = self.port_com.read_all()
+            time.sleep(0.1)
+
+    def close(self):
+        self.port_running = False
+        self.port_com.close()
+
+    def get_received(self):
+        return self.received
+
+    @staticmethod
+    def list_port():
+        com = ls_port.comports()
+        rt_list = []
+        for port in com:
+            tmp = port.description.index("COM")
+            rt_list.append(str(port.description)[tmp:-1])
+        return rt_list
+
+
+if __name__ == "__main__":
+    a = SerialCom()
+    a.port = "COM12"
+    a.listen_thread.start()
+    while(1):
+        print(a.get_received())
+        time.sleep(0.5)
+# netis_C30DB3                                    s%
+# password                                        p%
+# 192.168.1.34                                    i%
+# 8090                                            o%
+
