@@ -37,7 +37,7 @@ class Room:
 
     def retrieve_module(self, module_name):
         if module_name not in self.__modules:
-            self.__jsonifier.error("MODULE_ALREADY_EXIST_ERROR")
+            self.__jsonifier.error("MODULE_DONT_EXIST_ERROR")
             return self.get()
         module = self.__get_module(module_name)
         return module.jsonify()
@@ -96,9 +96,10 @@ class Room:
         self.__jsonifier += module.retrieve_light(light)
         return self.get()
 
-    def remove_light(self):
-        # todo
-        raise NotImplementedError()
+    def remove_light(self, module_light, light_name):
+        module = self.__get_module(module_light)
+        self.__jsonifier += module.remove_light(light_name)
+        return self.get()
 
     def set_light(self, mod, light, value):
         module = self.__get_module(mod)

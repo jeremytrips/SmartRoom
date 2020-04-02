@@ -1,0 +1,9 @@
+certifi==2019.11.28
+chardet==3.0.4
+docutils==0.16
+idna==2.8
+Kivy==1.11.1
+Pygments==2.5.2
+pyserial==3.4
+requests==2.22.0
+urllib3==1.25.8
