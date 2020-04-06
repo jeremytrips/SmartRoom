@@ -10,7 +10,6 @@ class SerialCom:
         self.port_com = serial.Serial(baudrate=115200, timeout=0.5, write_timeout=0.1)
         self.port = -1
         self.port_running = False
-        self.listen_thread = threading.Thread(target=self.receive)
         self.received = None
 
     def set_port(self, port):
@@ -22,10 +21,9 @@ class SerialCom:
         self.port_com.port = port
         self.port_com.open()
         self.port_running = True
-        self.listen_thread.start()
     port = property(None, set_port)
 
-    def send(self, data=None, action=None):
+    def write(self, data=None, action=None):
         if not (isinstance(data, bytes) or isinstance(data, str)):
             raise TypeError("Data must be bytes")
         if action is None:
@@ -34,15 +32,22 @@ class SerialCom:
         to_send = data + " " * (48 - len(data))
         to_send += action
         to_send += "%"
-        self.port_com.write(to_send.encode())
+        print(to_send)
+        #self.port_com.write(to_send.encode())
 
     def receive(self):
-        print(self.listen_thread)
-        while self.port_running:
+        run = True
+        self.port_com.read_all()
+        i = 0
+        while run:
             if not self.port_com.is_open:
                 raise Exception(f"Port {self.port_com} not open")
+            if i == 50:
+                return -1
             if self.port_com.inWaiting():
-                self.received = self.port_com.read_all()
+                run = False
+                return self.port_com.read_all()
+            i += 1
             time.sleep(0.1)
 
     def close(self):
@@ -63,14 +68,8 @@ class SerialCom:
 
 
 if __name__ == "__main__":
-    a = SerialCom()
-    a.port = "COM12"
-    a.listen_thread.start()
-    while(1):
-        print(a.get_received())
-        time.sleep(0.5)
+    pass
 # netis_C30DB3                                    s%
 # password                                        p%
-# 192.168.1.34                                    i%
+# 192.168.1.23                                    i%
 # 8090                                            o%
-

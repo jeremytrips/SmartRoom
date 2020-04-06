@@ -14,7 +14,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(room.append_module("esp32", "test"), {'success': ['MODULE_ADDED']})
 
         # Removing module
-        self.assertEqual(room.remove_module("test"), {'success': ['MODULE_ADDED']})
+        self.assertEqual(room.remove_module("test"), {'success': ['MODULE_REMOVED']})
 
 
 if __name__ == '__main__':

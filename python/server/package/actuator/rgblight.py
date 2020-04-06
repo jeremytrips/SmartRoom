@@ -5,14 +5,18 @@ from utils import Utils
 class RgbLight(Light):
     numberOfLight = 0
 
-    def __init__(self, name=None, value=None):
+    def __init__(self, name=None, pin=None, value=None):
         if value is None:
             value = [0, 0, 0]
         if name is None:
             RgbLight.numberOfLight += 1
             name = f"RGB light {RgbLight.numberOfLight}"
-        super().__init__(name, value)
+        super().__init__(name, value, pin)
         self._jsonifier.success("LIGHT_ADDED")
+
+    @classmethod
+    def get_type(cls):
+        return "RGB"
 
     def toggle(self, data):
         self._value = data[self.get_name()]

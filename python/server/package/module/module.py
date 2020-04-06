@@ -16,6 +16,15 @@ class Module:
         self._lights = []
         self._jsonifier = Jsonifier()
         self._jsonifier.success("MODULE_ADDED")
+        self.__attributed = False
+
+    def get_attributed(self):
+        return self.__attributed
+
+    def set_attributed(self, value):
+        self.__attributed = value
+
+    attributed = property(get_attributed, set_attributed)
 
     def get(self):
         return self._jsonifier.get()

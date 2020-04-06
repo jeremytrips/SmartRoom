@@ -5,7 +5,6 @@
 #define infoPinR 19
 #define infoPinG 18
 #define infoPinB 5
-#define WRITEN_CONSTANT 0x55
 
 #define debug false
 
@@ -43,94 +42,24 @@ void setup() {
   digitalWrite(infoPinB, HIGH);
 
   delay(5000);
-
-  if (Serial.available()) {
-    for (int i = 0; i < 10; i++)
-      Serial.write('B');
-    setupWifiData();
-  }
-
+  
   EEPROM.begin(512);
-  if (EEPROM.read(511) != WRITEN_CONSTANT) {
-    // Start Serial comunication for setup.
-    Serial.println("serial");
-    setupWifiData();
-  }
-  else {
-    /* Start the wifi protocol comunication.
-       The blue led will blink until the connection occurs.
-       After 10 try, the esp switch on a red led to warn the user.
-    */
-    Serial.println("Wifi");
-    // Read server data in EEPROM.
-    int connection_try = 0;
-    EEPROM_read(host, 300);
-    EEPROM_read(temp, 350);
-    EEPROM_read(ssid, 400);
-    EEPROM_read(password, 450);
-    port = arrayToInt(temp);
-
-    Serial.print("SSID: ");
-    Serial.println(ssid);
-    Serial.print("Password: ");
-    Serial.println(password);
-    Serial.print("Host: ");
-    Serial.println(host);
-    Serial.print("Port: ");
-    Serial.println(port);
-
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-      // Checking the wifi status every 500 ms.
-      delay(500);
-      connection_try++;
-      Serial.print("Connection attempt: ");
-      Serial.println(connection_try);
-      if (connection_try > 10) {
-        // Error as occurs the SSID or password may be wrong.
-        digitalWrite(infoPinR, !digitalRead(infoPinR));
-      } else {
-        digitalWrite(infoPinB, !digitalRead(infoPinB));
-      }
-    }
-    digitalWrite(infoPinB, HIGH);
-    Serial.println("Connected");
-  }
-
+  EEPROM_read(host, 301);
+  EEPROM_read(temp, 351);
+  EEPROM_read(ssid, 401);
+  EEPROM_read(password, 451);
+  port = arrayToInt(temp);
   EEPROM.end();
 
-  unsigned long previousMillis = 0;
-  const int delay = 1000;
-
-  if (!client.connect(host, port)) {
-    // if the module can't connect to the server. Provided data may be wrong and so red led is turned on.
-    digitalWrite(infoPinR, LOW);
-    while (true);
-  } else {
-    // Introduction to the server
-
-    if (EEPROM.read(510) == WRITEN_CONSTANT) {
-      client.write("no_name");
-      resetArray(temp);
-      while (!client.available());
-      client.readStringUntil('%').toCharArray(temp, 50);
-
-      Serial.print("Recieced_name: ");
-      Serial.println(temp);
-
-      EEPROM_write(temp, 0);
-      EEPROM.write(510, WRITEN_CONSTANT);
-      EEPROM.commit();
-    } else {
-      resetArray(temp);
-      EEPROM_read(temp, 0);
-      client.print(temp);
-    }
-  }
+  Serial.print("SSID: ");
+  Serial.println(ssid);
+  Serial.print("Password: ");
+  Serial.println(password);
+  Serial.print("Host: ");
+  Serial.println(host);
+  Serial.print("Port: ");
+  Serial.println(port);
 }
-
-unsigned long previousMillis = 0;
-const int timeDelay = 1000;
 
 void loop() {
   /*
@@ -139,16 +68,8 @@ void loop() {
   // Connection to the server.
 
 
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= timeDelay) {
-    previousMillis = currentMillis;
-    digitalWrite(infoPinG, !digitalRead(infoPinG));
-  }
+  setupWifiData();
 
-  if (client.available()) {
-    // Data has been sended by the server. The data frame is described in the doc.
-    String tmp = client.readStringUntil('%');
-  }
 }
 
 
@@ -178,7 +99,7 @@ void setupWifiData() {
 
   Serial.begin(115200);
   Serial.setTimeout(2000);
-  Serial.println("Setting up things");
+
   int writen = 0;
   char tmp[50];
   char action;
@@ -197,37 +118,33 @@ void setupWifiData() {
     if (currentMillis - previousMillis >= delay) {
       previousMillis = currentMillis;
       digitalWrite(infoPinG, !digitalRead(infoPinG));
-      Serial.println(writen);
     }
 
     if (Serial.available()) {
       String str = Serial.readStringUntil('%');
       str.toCharArray(tmp, 50);
       action = tmp[48];
-      Serial.println(tmp);
-      Serial.println(action);
-      while (Serial.available())
-        Serial.read();
+      Serial.read();
     }
     switch (action) {
       case 's':
         // Writing the Ssid
-        EEPROM_write(tmp, 400);
+        EEPROM_write(tmp, 401);
         writen++;
         break;
       case 'p':
         // Writing the Password
-        EEPROM_write(tmp, 450);
+        EEPROM_write(tmp, 451);
         writen++;
         break;
       case 'i':
         // Writing server Ip
-        EEPROM_write(tmp, 300);
+        EEPROM_write(tmp, 301);
         writen++;
         break;
       case 'o':
         // Writing server pOrt
-        EEPROM_write(tmp, 350);
+        EEPROM_write(tmp, 351);
         writen++;
         break;
       case 'n':
@@ -240,7 +157,7 @@ void setupWifiData() {
     action = 'n';
     if (writen == 4) {
       run = false;
-      EEPROM.write(511, WRITEN_CONSTANT);
+      EEPROM.write(511, 0x55);
     }
   }
   digitalWrite(infoPinG, HIGH);

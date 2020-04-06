@@ -1,5 +1,6 @@
 from package.room.room import Room
 from package.module.esp32 import Esp32
+import requests
 p = print
 
 room = Room.get()

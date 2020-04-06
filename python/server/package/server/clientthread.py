@@ -11,21 +11,20 @@ class ClientThread(threading.Thread):
         self.csocket = clientsocket
         self.clientAddress = clientAddress
         self.identifier = identifier
-        print (f"New connection added: {self.clientAddress} with id: {self.identifier}")
+        print(f"New connection added: {self.clientAddress} with id: {self.identifier}")
 
     def run(self):
-        print ("Connection from : ", self.clientAddress)
+        print("Connection from : ", self.clientAddress)
         msg = ''
         while True:
             data = self.csocket.recv(64)
             msg = data.decode()
-            if msg=='bye':
-              break
+            if msg == 'bye':
+                break
             elif msg != "":
-                
                 msg = ""
             self.csocket.send(bytes(msg,'UTF-8'))
-        print ("Client at ", self.clientAddress , " disconnected...")
+        print("Client at ", self.clientAddress, " disconnected...")
 
     def send(self, data):
         self.csocket.send(data.encode('utf-8'))

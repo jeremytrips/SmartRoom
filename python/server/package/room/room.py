@@ -1,13 +1,9 @@
 from package.allocator.idallocator import IdAllocator
-from package.module.esp32 import Module
+import utils
 from package.singelton.singelton import Singleton
 from package.jsonifier.jsonifier import Jsonifier
 
 import settings
-
-"""
-Singleton
-"""
 
 
 @Singleton
@@ -19,7 +15,39 @@ class Room:
         self.__modules = []
         self.__jsonifier = Jsonifier()
 
+    def get_not_attributed(self):
+        not_attributed = list()
+        for mod in self.__modules:
+            if not mod.attributed:
+                not_attributed.append(mod)
+        return not_attributed
+
+    def get_attributed(self, module):
+        print("mab")
+        print(self.__modules)
+        module = self.__get_module(module)
+        print(module)
+        return module.attributed
+
+    def set_attributed(self, mod, value):
+        module = self.__get_module(mod)
+        module.set_attributed(value)
+
+    def get_action(self):
+        return {"on": self.switch_on, "off": self.switch_off}
+
+    def get_modules(self):
+        print(f"Get module: {id(self)}")
+        return self.__modules
+
     def append_module(self, module_type, module_name=None):
+        """
+
+        :param module_type:
+        :param module_name:
+        :return:
+        """
+        print(f"append module: {id(self)}")
         if module_type not in settings.MODULE_TYPE.keys():
             self.__jsonifier.error("NOT_MODULE_ERROR")
             return self.get()
@@ -31,11 +59,17 @@ class Room:
             return self.get()
         module_to_add = settings.MODULE_TYPE[module_type](module_name)
         module_to_add.identifier = self.__id_allocator.allocate()
+        utils.Utils.save_module(module_type, module_to_add)
         self.__modules.append(module_to_add)
         self.__jsonifier += module_to_add.get()
         return self.get()
 
     def retrieve_module(self, module_name):
+        """
+
+        :param module_name:
+        :return:
+        """
         if module_name not in self.__modules:
             self.__jsonifier.error("MODULE_DONT_EXIST_ERROR")
             return self.get()
@@ -49,6 +83,7 @@ class Room:
         module = self.__get_module(module_name)
         self.__id_allocator.deallocate(module.identifier)
         self.__modules.remove(module)
+        utils.Utils.delete_module(module_name)
         self.__jsonifier.success("MODULE_REMOVED")
         return self.__jsonifier.get()
 
@@ -73,15 +108,16 @@ class Room:
             self.__jsonifier += module.jsonify()
         return self.get()
 
-    def append_light(self, module, light_type, name=None):
+    def append_light(self, mod, light_type, name=None, pin=None):
         if light_type not in settings.LIGHT_TYPE:
             self.__jsonifier.error(["LIGHT_TYPE_DO_NOT_EXIST"])
             return self.get()
-        if module not in self.__modules:
+        if mod not in self.__modules:
             self.__jsonifier.error("MODULE_DO_NOT_EXIST")
             return self.get()
-        module = self.__get_module(module)
-        light = settings.LIGHT_TYPE[light_type](name)
+        module = self.__get_module(mod)
+        light = settings.LIGHT_TYPE[light_type](name, pin)
+        print(light)
         self.__jsonifier += module.append_light(light)
         return self.get()
 

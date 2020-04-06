@@ -4,12 +4,16 @@ from package.actuator.light import Light
 class TorLight(Light):
     numberOfLight = 0
 
-    def __init__(self, name=None, value=0):
+    def __init__(self, name, pin=None, value=0):
         if name is None:
             TorLight.numberOfLight += 1
             name = f"Tor light {TorLight.numberOfLight}"
-        super().__init__(name, value)
+        super().__init__(name, value, pin)
         self._jsonifier.success("MODULE_ADDED")
+
+    @classmethod
+    def get_type(cls):
+        return "TOR"
 
     def toggle(self, data):
         self._value = data[self.get_name()]

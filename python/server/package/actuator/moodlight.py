@@ -5,12 +5,16 @@ from package.actuator.light import Light
 class MoodLight(Light):
     numberOfLight = 0
 
-    def __init__(self, name, value=0):
+    def __init__(self, name, pin=None, value=0):
         if name is None:
             MoodLight.numberOfLight += 1
             name = f"Mood light {MoodLight.numberOfLight}"
-        super().__init__(name, value)
+        super().__init__(name, value, pin)
         self._jsonifier.success("MODULE_ADDED")
+
+    @classmethod
+    def get_type(cls):
+        return "MOOD"
 
     def toggle(self, data):
         self._value = data[self.get_name()]

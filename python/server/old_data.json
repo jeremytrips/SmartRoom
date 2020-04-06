@@ -1,15 +1,29 @@
 {
-    "bureau": [
-        0,
-        0,
-        0
-    ],
-    "Mood light 1": 0,
-    "Tor light 1": 1,
-    "RGB light 1": [
-        0,
-        0,
-        0
-    ],
-    "Tor light 2": 0
+    "lit": {
+        "data": {
+            "identifier": 0,
+            "type": "esp32"
+        },
+        "light": {
+            "test": {
+                "pin": 16,
+                "value": 0,
+                "type": "MOOD"
+            },
+            "test2": {
+                "pin": 17,
+                "value": 0,
+                "type": "MOOD"
+            },
+            "led": {
+                "pin": 18,
+                "value": [
+                    0,
+                    0,
+                    0
+                ],
+                "type": "RGB"
+            }
+        }
+    }
 }

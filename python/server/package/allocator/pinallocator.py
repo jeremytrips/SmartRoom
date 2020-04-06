@@ -22,7 +22,8 @@ class PinAllocator:
             pin_to_allocate = self.available_pin_list.pop(0)
             self.used_pin_list.append(pin_to_allocate)
             self.__jsonifier.success("PIN_ALLOCATE")
-            return pin_to_allocate
+            self.__jsonifier.data({"pin": pin_to_allocate})
+            return self.get()
         except IndexError:
             self.__jsonifier.error("NO_MORE_PIN")
             return self.get()

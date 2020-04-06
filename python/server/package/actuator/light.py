@@ -4,8 +4,8 @@ from utils import Utils
 
 class Light:
 
-    def __init__(self, name, value):
-        self.__pin = -1
+    def __init__(self, name, value, pin):
+        self.__pin = pin
         self.__name = name
         self._jsonifier = Jsonifier()
         self._value = value
@@ -24,17 +24,25 @@ class Light:
     def get_child():
         return Light.__subclasses__()
 
-    def set_pin(self, pin_to_set):
-        self.__pin = pin_to_set
-
-    def get_pin(self):
-        return self.__pin
-
     def switch_on(self):
         raise NotImplementedError
 
     def switch_off(self):
         raise NotImplementedError
+
+    def get_value(self):
+        return self._value
+
+    def set_value(self, value):
+        self._value = value
+
+    value = property(get_value, set_value)
+
+    def set_pin(self, pin_to_set):
+        self.__pin = pin_to_set
+
+    def get_pin(self):
+        return self.__pin
 
     pin = property(get_pin, set_pin)
 

@@ -1,3 +1,4 @@
+
 #include <EEPROM.h>
 char buf[50] = {0};
 
@@ -55,14 +56,22 @@ void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
 
+  EEPROM_read(ssid, 400);
+  EEPROM_read(password, 450);
+  EEPROM_read(host, 300);
+  EEPROM_read(temp, 350);
 
   Serial.println(ssid);
   Serial.println(password);
   Serial.println(host);
-  Serial.println(temp);
   Serial.println(arrayToInt(temp));
 
-  Serial.println("nok");
+  char buf[10];
+  for (int i = 0; i < 512; i++)
+  {
+    sprintf(buf, "%d => %c", i, EEPROM.read(i));
+    Serial.println(buf);
+  }
 }
 
 void loop() {
@@ -75,27 +84,30 @@ void loop() {
     Serial.println(str);
     Serial.println(action);
     Serial.println("-----------------------------------");
-    Serial.read();
+    while (Serial.available()) {
+      Serial.read();
+    }
+
   }
   switch (action) {
     case 's':
       // Writing the Ssid
-      EEPROM_write(tmp, 401);
+      EEPROM_write(tmp, 400);
       writen++;
       break;
     case 'p':
       // Writing the Password
-      EEPROM_write(tmp, 451);
+      EEPROM_write(tmp, 450);
       writen++;
       break;
     case 'i':
       // Writing server Ip
-      EEPROM_write(tmp, 301);
+      EEPROM_write(tmp, 300);
       writen++;
       break;
     case 'o':
       // Writing server pOrt
-      EEPROM_write(tmp, 351);
+      EEPROM_write(tmp, 350);
       writen++;
       break;
     case 'n':
@@ -108,15 +120,16 @@ void loop() {
   action = 'n';
   if (writen == 4) {
     Serial.println("=========================================");
-    EEPROM_read(ssid, 401);
-    EEPROM_read(password, 451);
-    EEPROM_read(host, 301);
-    EEPROM_read(temp, 351);
+    EEPROM_read(ssid, 400);
+    EEPROM_read(password, 450);
+    EEPROM_read(host, 300);
+    EEPROM_read(temp, 350);
     Serial.println(ssid);
     Serial.println(password);
     Serial.println(host);
     Serial.println(temp);
     Serial.println("=========================================");
+    
     writen = 0;
   }
 }
