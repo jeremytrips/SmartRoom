@@ -13,11 +13,16 @@ The esp32 class provides an interface for the actual ESP32 device.
 class Esp32(Module):
 
     def __init__(self, name):
-        super().__init__(16, 33, name)
+        super().__init__(16, 32, name)
 
-    def append_light(self, light_to_add, pin=None):
+    @classmethod
+    def get_type(cls):
+        return "esp32"
+
+    def append_light(self, light_to_add):
         """
         Add light to the module.
+        :param pin:
         :param light_to_add:
         :return:
         """
@@ -27,13 +32,14 @@ class Esp32(Module):
         if light_to_add in self._lights:
             self._jsonifier.error("LIGHT_ALREADY_EXIST")
             return self.get()
-        pin_allocator = self._allocator.allocate()
-        if "error" in pin_allocator.keys():
-            return pin_allocator
-        light_to_add.pin = pin_allocator["data"][0]["pin"]
-        self._jsonifier.success(pin_allocator["success"])
+        if light_to_add.pin is None:
+            pin_allocator = self._allocator.allocate()
+            if "error" in pin_allocator.keys():
+                return pin_allocator
+            light_to_add.pin = pin_allocator["data"][0]["pin"]
         self._lights.append(light_to_add)
         self._jsonifier += light_to_add.jsonify()
+        self._change_list.append(("c", light_to_add))
         utils.Utils.save_light(self._name, light_to_add)
         return self.get()
     
@@ -79,6 +85,7 @@ class Esp32(Module):
             if light == light_to_set:
                 light.Value = value
                 self._jsonifier += light.jsonify()
+                self._change_list.append(("s", light.jsonify()["data"][0]))
                 return self.get()
 
 

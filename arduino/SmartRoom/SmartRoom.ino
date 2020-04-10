@@ -9,6 +9,17 @@
 
 #define debug false
 
+struct pin {
+  int pin: null;
+  int value;
+}
+
+struct data {
+  pin red;
+  pin green;
+  pin blue;
+}
+
 // Variable declaration.
 
 char temp[50];

@@ -1,29 +1,16 @@
 {
-    "lit": {
-        "data": {
-            "identifier": 0,
-            "type": "esp32"
-        },
-        "light": {
-            "test": {
-                "pin": 16,
-                "value": 0,
-                "type": "MOOD"
-            },
-            "test2": {
-                "pin": 17,
-                "value": 0,
-                "type": "MOOD"
-            },
-            "led": {
-                "pin": 18,
-                "value": [
-                    0,
-                    0,
-                    0
-                ],
-                "type": "RGB"
-            }
-        }
-    }
+   "bureau": {
+      "data": {
+         "identifier": 0,
+         "name": "bureau",
+         "type": "esp32"
+      },
+      "light": {
+         "Tor light 1": {
+            "pin": 16,
+            "value": 0,
+            "type": "TOR"
+         }
+      }
+   }
 }

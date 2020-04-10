@@ -29,6 +29,7 @@ class RgbLight(Light):
         self._value = [0] * 3
 
     def set_value(self, value):
+        value = int(value)
         if isinstance(value, int):
             value = [value, value, value]
         self.save_data(self._value)

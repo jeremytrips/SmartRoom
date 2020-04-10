@@ -14,6 +14,18 @@ class Room:
         self.__id_allocator = IdAllocator()
         self.__modules = []
         self.__jsonifier = Jsonifier()
+        self.__has_change = False
+
+    def has_change(self):
+        return self.__has_change
+
+    def get_change(self):
+        list_of_change = list()
+        for module in self.__modules:
+            if module.has_change():
+                list_of_change.append(module.get_changes())
+        self.__has_change = False
+        return list_of_change
 
     def get_not_attributed(self):
         not_attributed = list()
@@ -23,10 +35,7 @@ class Room:
         return not_attributed
 
     def get_attributed(self, module):
-        print("mab")
-        print(self.__modules)
         module = self.__get_module(module)
-        print(module)
         return module.attributed
 
     def set_attributed(self, mod, value):
@@ -37,7 +46,6 @@ class Room:
         return {"on": self.switch_on, "off": self.switch_off}
 
     def get_modules(self):
-        print(f"Get module: {id(self)}")
         return self.__modules
 
     def append_module(self, module_type, module_name=None):
@@ -47,7 +55,6 @@ class Room:
         :param module_name:
         :return:
         """
-        print(f"append module: {id(self)}")
         if module_type not in settings.MODULE_TYPE.keys():
             self.__jsonifier.error("NOT_MODULE_ERROR")
             return self.get()
@@ -100,12 +107,14 @@ class Room:
         for module in self.__modules:
             module.switch_off()
             self.__jsonifier += module.jsonify()
+        self.__has_change = True
         return self.get()
 
     def switch_on(self):
         for module in self.__modules:
             module.switch_on()
             self.__jsonifier += module.jsonify()
+        self.__has_change = True
         return self.get()
 
     def append_light(self, mod, light_type, name=None, pin=None):
@@ -116,8 +125,9 @@ class Room:
             self.__jsonifier.error("MODULE_DO_NOT_EXIST")
             return self.get()
         module = self.__get_module(mod)
+        if pin is not None:
+            module.set_used_pin(pin)
         light = settings.LIGHT_TYPE[light_type](name, pin)
-        print(light)
         self.__jsonifier += module.append_light(light)
         return self.get()
 
@@ -140,6 +150,7 @@ class Room:
     def set_light(self, mod, light, value):
         module = self.__get_module(mod)
         self.__jsonifier += module.set_light(light, value)
+        self.__has_change = True
         return self.get()
 
     def __get_module(self, module):

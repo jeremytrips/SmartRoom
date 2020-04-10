@@ -11,11 +11,15 @@ class PinAllocator:
     def jsonify(self):
         jsonifier = jf.Jsonifier()
         jsonifier.data({
-            "type": "id_allocator",
-            "available_id": self.available_id_list,
-            "used_id": self.used_id_list
+            "type": "pin_allocator",
+            "available_pin": self.available_pin_list,
+            "used_pin": self.used_pin_list
         })
         return jsonifier.get()
+
+    def set_used(self, used_pin):
+        self.available_pin_list.remove(used_pin)
+        self.used_pin_list.append(used_pin)
 
     def allocate(self):
         try:

@@ -2,6 +2,8 @@ from package.allocator.pinallocator import PinAllocator
 from package.jsonifier.jsonifier import Jsonifier
 from utils import Utils
 
+import copy
+
 
 class Module:
     number_of_module = 0
@@ -17,6 +19,22 @@ class Module:
         self._jsonifier = Jsonifier()
         self._jsonifier.success("MODULE_ADDED")
         self.__attributed = False
+        self._change_list = list()
+
+    def get_pin_allocator(self):
+        return self._allocator.jsonify()
+
+    def set_used_pin(self, pin_id=None):
+        if pin_id is not None:
+            self._allocator.set_used(pin_id)
+
+    def has_change(self):
+        return len(self._change_list) > 0
+
+    def get_changes(self):
+        temp = {self._name: copy.deepcopy(self._change_list)}
+        self._change_list.clear()
+        return temp
 
     def get_attributed(self):
         return self.__attributed
@@ -42,11 +60,13 @@ class Module:
         for light in self._lights:
             light.switch_on()
             self._jsonifier += light.jsonify()
+            self._change_list.append(("s", light))
 
     def switch_off(self):
         for light in self._lights:
             light.switch_off()
             self._jsonifier.data(light.jsonify())
+            self._change_list.append(("s", light))
 
     def get_identifier(self):
         return self._identifier

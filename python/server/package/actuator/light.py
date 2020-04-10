@@ -34,7 +34,7 @@ class Light:
         return self._value
 
     def set_value(self, value):
-        self._value = value
+        raise NotImplementedError()
 
     value = property(get_value, set_value)
 

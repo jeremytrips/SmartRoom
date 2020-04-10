@@ -20,11 +20,6 @@ class Jsonifier:
     def error(self, data):
         self.__data_layout["error"].append(data)
 
-    def multiple_data(self, success=None, data=None, error=None):
-        self.__data_layout["success"].append(success)
-        self.__data_layout["data"].append(data)
-        self.__data_layout["error"].append(error)
-
     def _reset(self):
         self.__data_layout = {
             "success": [],

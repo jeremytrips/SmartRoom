@@ -5,8 +5,7 @@ rg = requests.get
 room = room.Room.get()
 print(f"http server test: {id(room)}")
 print(rg("http://localhost:5050/module/add/esp32/test").content)
-for elem in room.get_modules():
-    print(f"attributed: {elem.attributed}")
+
 """
 print(rg("http://localhost:5050/module/add/esp32/").content)
 

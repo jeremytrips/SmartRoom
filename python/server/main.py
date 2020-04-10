@@ -10,13 +10,17 @@ import utils
 class Main:
 
     def __init__(self):
-        data = utils.Utils.get_data()
+        data = utils.Utils.load_backup()
         for module, keys in data.items():
             room.Room.get().append_module(keys["data"]["type"], module)
             for light_name in keys["light"]:
-                print(keys["light"][light_name])
-                room.Room.get().append_light(module, keys["light"][light_name]["type"], light_name, keys["light"][light_name]["pin"])
-
+                print(keys["light"][light_name]["pin"])
+                room.Room.get().append_light(
+                    module,
+                    keys["light"][light_name]["type"],
+                    light_name,
+                    keys["light"][light_name]["pin"]
+                )
         threading.Thread(target=self.http_server_thread).start()
         threading.Thread(target=self.socket_server_thread).start()
 
