@@ -1,3 +1,1 @@
 # SmartRoom
-just for fun
-
